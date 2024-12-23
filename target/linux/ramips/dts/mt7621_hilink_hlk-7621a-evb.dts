@@ -9,6 +9,10 @@
 	compatible = "hilink,hlk-7621a-evb", "mediatek,mt7621-soc";
 	model = "HiLink HLK-7621A evaluation board";
 
+	chosen {
+		bootargs = "console=ttyS0,57600";
+	};
+
 	keys {
 		compatible = "gpio-keys";
 
@@ -59,6 +63,13 @@
 					eeprom_factory_8000: eeprom@8000 {
 						reg = <0x8000 0x200>;
 					};
+
+					macaddr_factory_e000: macaddr@e000 {
+						reg = <0xe000 0x6>;
+					};
+					macaddr_factory_e006: macaddr@e006 {
+						reg = <0xe006 0x6>;
+					};
 				};
 			};
 
@@ -71,10 +82,9 @@
 	};
 };
 
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
+&gmac0 {
+	nvmem-cells = <&macaddr_factory_e000>;
+	nvmem-cell-names = "mac-address";
 };
 
 &ethphy4 {
@@ -102,6 +112,13 @@
 			status = "okay";
 			label = "lan4";
 		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			nvmem-cells = <&macaddr_factory_e006>;
+			nvmem-cell-names = "mac-address";
+		};
 	};
 };
 
@@ -118,9 +135,25 @@
 	};
 };
 
+&ethernet {
+	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
+};
+
 &state_default {
 	gpio {
-		groups = "wdt";
+		groups = "wdt", "rgmii2";
 		function = "gpio";
 	};
+};
+
+&sdhci {
+	status = "okay";
+};
+
+&uartlite2 {
+	status = "okay";
+};
+
+&uartlite3 {
+	status = "okay";
 };
