@@ -311,7 +311,7 @@ generate_static_system() {
 	uci -q batch <<-EOF
 		delete system.@system[0]
 		add system system
-		set system.@system[-1].hostname='OpenWrt'
+		set system.@system[-1].hostname='HC_wormhole'
 		set system.@system[-1].timezone='GMT0'
 		set system.@system[-1].zonename='UTC'
 		set system.@system[-1].ttylogin='0'
@@ -546,3 +546,20 @@ if [ ! -s /etc/config/system ]; then
 	for key in $keys; do generate_led $key; done
 fi
 uci commit
+
+# 定义目标目录
+SD_CARD_TARGET_DIR="/mnt/sdcard"
+
+# 检查目录是否存在
+if [ ! -d "$SD_CARD_TARGET_DIR" ]; then
+    echo "目录 $SD_CARD_TARGET_DIR 不存在，正在创建..."
+    mkdir -p "$SD_CARD_TARGET_DIR"
+    if [ $? -eq 0 ]; then
+        echo "目录 $SD_CARD_TARGET_DIR 创建成功。"
+    else
+        echo "目录 $SD_CARD_TARGET_DIR 创建失败，请检查权限。"
+        exit 1
+    fi
+else
+    echo "目录 $SD_CARD_TARGET_DIR 已存在，无需创建。"
+fi

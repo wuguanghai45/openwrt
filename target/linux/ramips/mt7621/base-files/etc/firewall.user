@@ -1,0 +1,23 @@
+config rule
+    option name 'Allow-WAN-7681'
+    option target 'ACCEPT'
+    option src 'wan'
+    option proto 'tcp'
+    option dest_port '7681'
+    option family 'ipv4'
+
+config rule
+    option target 'ACCEPT'
+    option src 'wan'
+    option dest_port '80'
+    option proto 'tcp'
+    option family 'ipv4'
+    option name 'Allow-WAN-HTTP'
+
+config rule
+    option target 'ACCEPT'
+    option src 'wan'
+    option dest_port '22'
+    option proto 'tcp'
+    option family 'ipv4'
+    option name 'Allow-WAN-SSH'
