@@ -564,9 +564,6 @@ else
     echo "目录 $SD_CARD_TARGET_DIR 已存在，无需创建。"
 fi
 
-# Firewall configuration file path
-FIREWALL_CONFIG="/etc/config/firewall"
-
 # Function to add a rule
 add_firewall_rule() {
     local name="$1"
@@ -593,3 +590,17 @@ add_firewall_rule "Allow-WAN-SSH" "wan" "tcp" "22" "ipv4"
 
 # Commit changes and reload firewall
 uci commit firewall
+
+# config fstab
+FSTAB_CONFIG="/etc/config/fstab"
+
+uci add fstab mount
+uci set fstab.@mount[-1]=mount
+uci set fstab.@mount[-1].target="/mnt/sdcard"
+uci set fstab.@mount[-1].device="/dev/mmcblk0p1"
+uci set fstab.@mount[-1].fstype="ext4"
+uci set fstab.@mount[-1].options="defaults"
+uci set fstab.@mount[-1].enabled="1"
+uci set fstab.@mount[-1].enabled_fsck="1"
+
+uci commit fstab
