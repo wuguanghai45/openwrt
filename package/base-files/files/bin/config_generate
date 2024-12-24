@@ -563,3 +563,33 @@ if [ ! -d "$SD_CARD_TARGET_DIR" ]; then
 else
     echo "目录 $SD_CARD_TARGET_DIR 已存在，无需创建。"
 fi
+
+# Firewall configuration file path
+FIREWALL_CONFIG="/etc/config/firewall"
+
+# Function to add a rule
+add_firewall_rule() {
+    local name="$1"
+    local src="$2"
+    local proto="$3"
+    local dest_port="$4"
+    local family="$5"
+    local target="${6:-ACCEPT}"
+
+    # Append rule to the firewall configuration
+    uci add firewall rule
+    uci set firewall.@rule[-1].name="$name"
+    uci set firewall.@rule[-1].src="$src"
+    uci set firewall.@rule[-1].proto="$proto"
+    uci set firewall.@rule[-1].dest_port="$dest_port"
+    uci set firewall.@rule[-1].family="$family"
+    uci set firewall.@rule[-1].target="$target"
+}
+
+# Add rules
+add_firewall_rule "Allow-WAN-7681" "wan" "tcp" "7681" "ipv4"
+add_firewall_rule "Allow-WAN-HTTP" "wan" "tcp" "80" "ipv4"
+add_firewall_rule "Allow-WAN-SSH" "wan" "tcp" "22" "ipv4"
+
+# Commit changes and reload firewall
+uci commit firewall
