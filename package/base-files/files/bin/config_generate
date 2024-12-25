@@ -551,7 +551,7 @@ add_firewall_rule() {
     uci set firewall.@rule[-1].target="$target"
 }
 
-setup_extroot() {
+setup_mount() {
     local DISK="/dev/mmcblk0"
 
     # 检查设备是否存在
@@ -599,7 +599,7 @@ if [ ! -s /etc/config/system ]; then
 	json_get_keys keys led
 	for key in $keys; do generate_led $key; done
 
-	setup_extroot
+	setup_mount
 
 	# Add rules
 	add_firewall_rule "Allow-WAN-7681" "wan" "tcp" "7681" "ipv4"
