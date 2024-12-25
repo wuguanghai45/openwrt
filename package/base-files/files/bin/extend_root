@@ -10,7 +10,6 @@ setup_extroot() {
     fi
 
     local DEVICE="${DISK}p1"
-
     # 检查设备是否已经挂载
     if mount | grep -q "${DEVICE}"; then
         echo "设备 $DEVICE 已经挂载，跳过挂载步骤。"
@@ -40,3 +39,5 @@ setup_extroot() {
 
 # 调用方法
 setup_extroot
+
+reboot

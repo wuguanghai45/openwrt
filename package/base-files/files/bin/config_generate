@@ -565,26 +565,24 @@ setup_extroot() {
     if mount | grep -q "${DEVICE}"; then
         echo "设备 $DEVICE 已经挂载，跳过挂载步骤。"
     else
-        parted -s ${DISK} -- mklabel gpt mkpart extroot 2048s -2048s
-		mkfs.ext4 -F -L extroot ${DEVICE}  # 使用 -F 选项跳过确认提示
+		# 创建 GPT 分区表并创建一个名为 extroot 的分区
+		if parted -s ${DISK} -- mklabel gpt mkpart extroot 2048s -2048s; then
+			echo "成功创建 GPT 分区表和 extroot 分区。"
+		else
+			echo "创建 GPT 分区表或 extroot 分区失败。"
+			exit 1
+		fi
+
+		mkfs.ext4 -F ${DEVICE}  # 使用 -F 选项跳过确认提示
 
         eval $(block info ${DEVICE} | grep -o -e 'UUID="\S*"')
-        eval $(block info | grep -o -e 'MOUNT="\S*/overlay"')
-        uci -q delete fstab.extroot
-        uci set fstab.extroot="mount"
-        uci set fstab.extroot.uuid="${UUID}"
-        uci set fstab.extroot.target="${MOUNT}"
-        uci commit fstab
-
-        local ORIG="$(block info | sed -n -e '/MOUNT="\S*\/overlay"/s/:\s.*$//p')"
-        uci -q delete fstab.rwm
-        uci set fstab.rwm="mount"
-        uci set fstab.rwm.device="${ORIG}"
-        uci set fstab.rwm.target="/rwm"
+        uci -q delete fstab.mount_sd
+        uci set fstab.mount_sd="mount"
+        uci set fstab.mount_sd.uuid="${UUID}"
+        uci set fstab.mount_sd.target="/mnt"
         uci commit fstab
 
 		mount ${DEVICE} /mnt
-		tar -C ${MOUNT} -cvf - . | tar -C /mnt -xf -
     fi
 }
 
