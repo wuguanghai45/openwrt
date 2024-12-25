@@ -547,23 +547,6 @@ if [ ! -s /etc/config/system ]; then
 fi
 uci commit
 
-# 定义目标目录
-SD_CARD_TARGET_DIR="/mnt/sdcard"
-
-# 检查目录是否存在
-if [ ! -d "$SD_CARD_TARGET_DIR" ]; then
-    echo "目录 $SD_CARD_TARGET_DIR 不存在，正在创建..."
-    mkdir -p "$SD_CARD_TARGET_DIR"
-    if [ $? -eq 0 ]; then
-        echo "目录 $SD_CARD_TARGET_DIR 创建成功。"
-    else
-        echo "目录 $SD_CARD_TARGET_DIR 创建失败，请检查权限。"
-        exit 1
-    fi
-else
-    echo "目录 $SD_CARD_TARGET_DIR 已存在，无需创建。"
-fi
-
 # Function to add a rule
 add_firewall_rule() {
     local name="$1"
