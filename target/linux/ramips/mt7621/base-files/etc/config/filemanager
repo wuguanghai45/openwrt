@@ -1,0 +1,10 @@
+config filemanager
+	option columnWidths 'name:150,type:100,size:100,mtime:150,actions:100'
+	option columnMinWidths 'name:100,type:80,size:80,mtime:120,actions:80'
+	option columnMaxWidths 'name:300,type:200,size:200,mtime:300,actions:200'
+	option padding '10'
+	option paddingMin '5'
+	option paddingMax '20'
+	option currentDirectory '/root'
+	option windowSizes 'width:784,height:394'
+	option editorContainerSizes 'text:850x550,hex:850x550'
