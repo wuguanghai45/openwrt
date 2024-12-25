@@ -588,19 +588,45 @@ add_firewall_rule "Allow-WAN-7681" "wan" "tcp" "7681" "ipv4"
 add_firewall_rule "Allow-WAN-HTTP" "wan" "tcp" "80" "ipv4"
 add_firewall_rule "Allow-WAN-SSH" "wan" "tcp" "22" "ipv4"
 
-# Commit changes and reload firewall
-uci commit firewall
+setup_extroot() {
+    local DISK="/dev/mmcblk0"
 
-# config fstab
-FSTAB_CONFIG="/etc/config/fstab"
+    # 检查设备是否存在
+    if [ ! -b "$DISK" ]; then
+        echo "设备 $DISK 不存在，请检查连接。"
+        exit 1
+    fi
 
-uci add fstab mount
-uci set fstab.@mount[-1]=mount
-uci set fstab.@mount[-1].target="/mnt/sdcard"
-uci set fstab.@mount[-1].device="/dev/mmcblk0p1"
-uci set fstab.@mount[-1].fstype="ext4"
-uci set fstab.@mount[-1].options="defaults"
-uci set fstab.@mount[-1].enabled="1"
-uci set fstab.@mount[-1].enabled_fsck="1"
+    local DEVICE="${DISK}p1"
 
-uci commit fstab
+    # 检查设备是否已经挂载
+    if mount | grep -q "${DEVICE}"; then
+        echo "设备 $DEVICE 已经挂载，跳过挂载步骤。"
+    else
+        parted -s ${DISK} -- mklabel gpt mkpart extroot 2048s -2048s
+		mkfs.ext4 -F -L extroot ${DEVICE}  # 使用 -F 选项跳过确认提示
+
+        eval $(block info ${DEVICE} | grep -o -e 'UUID="\S*"')
+        eval $(block info | grep -o -e 'MOUNT="\S*/overlay"')
+        uci -q delete fstab.extroot
+        uci set fstab.extroot="mount"
+        uci set fstab.extroot.uuid="${UUID}"
+        uci set fstab.extroot.target="${MOUNT}"
+        uci commit fstab
+
+        local ORIG="$(block info | sed -n -e '/MOUNT="\S*\/overlay"/s/:\s.*$//p')"
+        uci -q delete fstab.rwm
+        uci set fstab.rwm="mount"
+        uci set fstab.rwm.device="${ORIG}"
+        uci set fstab.rwm.target="/rwm"
+        uci commit fstab
+
+        mount ${DEVICE} /mnt
+        tar -C ${MOUNT} -cvf - . | tar -C /mnt -xf -
+
+		reboot
+    fi
+}
+
+# 调用方法
+setup_extroot
