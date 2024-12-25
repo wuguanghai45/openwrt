@@ -560,6 +560,11 @@ setup_mount() {
         exit 1
     fi
 
+	# 检查是否存在 /mnt/sd 目录
+	if [ ! -d "/mnt/sd" ]; then
+		mkdir -p /mnt/sd
+	fi
+
     local DEVICE="${DISK}p1"
     # 检查设备是否已经挂载
     if mount | grep -q "${DEVICE}"; then
@@ -579,10 +584,10 @@ setup_mount() {
         uci -q delete fstab.mount_sd
         uci set fstab.mount_sd="mount"
         uci set fstab.mount_sd.uuid="${UUID}"
-        uci set fstab.mount_sd.target="/mnt"
+        uci set fstab.mount_sd.target="/mnt/sd"
         uci commit fstab
 
-		mount ${DEVICE} /mnt
+		mount ${DEVICE} /mnt/sd
     fi
 }
 
