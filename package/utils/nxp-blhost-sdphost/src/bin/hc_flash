@@ -1,0 +1,48 @@
+#!/bin/sh
+
+flash_nxp() {
+    blhost -u 0x15a2,0x0073 -- fill-memory 0x20202000 4 0xC0000007 word
+    blhost -u 0x15a2,0x0073 -- fill-memory 0x20202004 4 0 word
+
+    blhost -u 0x15a2,0x0073 -- configure-memory 9 0x20202000
+
+    blhost -t 100000 -u 0x15a2,0x0073 flash-erase-all 9
+    blhost -t 100000 -u 0x15a2,0x0073 -- write-memory 0x60000000 /tmp/nxp_flash.bin
+}
+
+check_and_flash_nxp() {
+    start_time=$(date +%s)
+    # 检查设备是否存在
+    if lsusb | grep -q "1fc9:0135"; then
+        sdphost -u 0x1fc9,0x0135 -- write-file 0x20000000 /etc/ivt_flashloader.bin
+        sdphost -u 0x1fc9,0x0135 -- jump-address 0x20000400
+        sleep 1
+
+        flash_nxp
+    else
+        if lsusb | grep -q "15a2:0073"; then
+            echo "找到设备 0x15a2:0x0073, bootloader已存在"
+            flash_nxp
+        else
+            echo "未找到设备"
+        fi
+    fi
+
+    end_time=$(date +%s)
+    duration=$((end_time - start_time))
+
+    echo "runtime $duration s"
+}
+
+check_and_flash_stm() {
+   dfu-util -d 0483:df11 -c 1 -i 0 -a 0 -s 0x08000000 -D /tmp/stm_flash.bin
+}
+
+# 检查命令行参数
+if [ "$1" = "nxp" ]; then
+    check_and_flash_nxp
+elif [ "$1" = "stm" ]; then
+    check_and_flash_stm
+else
+    echo "用法: $0 nxp | stm"
+fi

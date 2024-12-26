@@ -36,6 +36,11 @@ define Package/nxp-blhost-sdphost/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/blhost $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/sdphost $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/hc_flash $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/gpio_control $(1)/usr/bin/
+	$(INSTALL_DIR) $(1)/etc  # 添加这一行以确保 /etc 目录存在
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/ivt_flashloader.bin $(1)/etc/
+	
 endef
 
 $(eval $(call BuildPackage,nxp-blhost-sdphost))
