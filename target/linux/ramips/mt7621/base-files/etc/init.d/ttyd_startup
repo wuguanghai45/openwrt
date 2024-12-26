@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+start() {
+    # 启动 ttyd 和 minicom
+    /usr/bin/ttyd -p 7682 --max-clients 1 minicom -D /dev/ttyS1 -b 115200 -C /mnt/sd/nxp.log -O timestamp=extended &
+}
+
+stop() {
+    # 停止 ttyd 服务
+    killall ttyd
+}

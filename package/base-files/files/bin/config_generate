@@ -610,6 +610,10 @@ if [ ! -s /etc/config/system ]; then
 	add_firewall_rule "Allow-WAN-7681" "wan" "tcp" "7681" "ipv4"
 	add_firewall_rule "Allow-WAN-HTTP" "wan" "tcp" "80" "ipv4"
 	add_firewall_rule "Allow-WAN-SSH" "wan" "tcp" "22" "ipv4"
+	add_firewall_rule "Allow-WAN-NXP-TTYD" "wan" "tcp" "7682" "ipv4"
+	
+	/etc/init.d/ttyd-startup enable
+	/etc/init.d/ttyd-startup start
 fi
 
 uci commit
