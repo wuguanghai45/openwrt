@@ -6,7 +6,7 @@ STOP=10
 start() {
     # 启动 ttyd 和 minicom
     /usr/bin/ttyd -p 7682 --max-clients 1 minicom -D /dev/ttyS1 -b 115200 -C /mnt/sd/nxp_term.log -O timestamp=extended &
-    /usr/bin/ttyd -p 7681 -d 7 /bin/login
+    /usr/bin/ttyd -p 7681 -d 7 /bin/login &
 }
 
 stop() {
