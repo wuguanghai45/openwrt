@@ -15,3 +15,21 @@
     copytruncate
     size 100M
 }
+
+/mnt/sd/can0.log {
+    weekly
+    rotate 5
+    compress
+    delaycompress
+    copytruncate
+    size 100M
+}
+
+/mnt/sd/can1.log {
+    weekly
+    rotate 5
+    compress
+    delaycompress
+    copytruncate
+    size 100M
+}

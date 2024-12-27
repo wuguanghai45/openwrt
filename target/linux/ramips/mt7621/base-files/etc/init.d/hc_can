@@ -1,0 +1,34 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+canup() {
+  ip link set $1 type can bitrate $2
+  ip link set $1 txqueuelen 2000
+  ip link set up $1
+}
+
+candown() {
+   ip link set down $1
+}
+
+start() {
+    # 启动 ttyd 和 minicom
+    canup can0 1000000
+    canup can1 1000000
+    # candump 输出日志到 /mnt/sd/can.log
+    candump can0 -tA > /mnt/sd/can0.log &
+    candump can1 -tA > /mnt/sd/can1.log &
+}
+
+stop() {
+    # 停止 ttyd 服务
+    killall candump
+}
+
+restart() {
+    stop
+    start
+}
+
