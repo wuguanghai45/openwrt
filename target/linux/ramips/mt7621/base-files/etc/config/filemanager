@@ -5,6 +5,6 @@ config filemanager
 	option padding '10'
 	option paddingMin '5'
 	option paddingMax '20'
-	option currentDirectory '/root'
+	option currentDirectory '/mnt/sd'
 	option windowSizes 'width:784,height:394'
 	option editorContainerSizes 'text:850x550,hex:850x550'
