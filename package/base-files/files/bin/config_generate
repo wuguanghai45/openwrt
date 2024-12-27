@@ -617,6 +617,9 @@ if [ ! -s /etc/config/system ]; then
 
 	/etc/init.d/hc_ttyd enable
 	/etc/init.d/hc_ttyd start
+
+	/etc/init.d/hc_can enable
+	/etc/init.d/hc_can start
 fi
 
 uci commit
