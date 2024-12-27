@@ -1,0 +1,17 @@
+/mnt/sd/nxp.log {
+    weekly
+    rotate 5
+    compress
+    delaycompress
+    copytruncate
+    size 100M
+}
+
+/mnt/sd/nxp_term.log {
+    weekly
+    rotate 5
+    compress
+    delaycompress
+    copytruncate
+    size 100M
+}
